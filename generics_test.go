@@ -23,3 +23,15 @@ func TestSkipZeroValuedStrings(t *testing.T) {
 	expected := []string{"one", "two", "two", "three"}
 	assert.Equal(t, actual, expected)
 }
+
+func TestNoDuplicateValues(t *testing.T) {
+	actual := GetSliceWithoutDuplicates([]string{"one", "two", "three"})
+	expected := []string{"one", "two", "three"}
+	assert.Equal(t, actual, expected)
+}
+
+func TestSkipDuplicateValues(t *testing.T) {
+	actual := GetSliceWithoutDuplicates([]string{"one", "two", "one", "one", "three"})
+	expected := []string{"one", "two", "three"}
+	assert.Equal(t, actual, expected)
+}
