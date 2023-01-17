@@ -5,6 +5,7 @@ name: Coverage Reporting
 jobs:
   coverage-reporting:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Set up go 1.18
         uses: actions/setup-go@v3
