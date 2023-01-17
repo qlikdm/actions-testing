@@ -19,3 +19,14 @@ func getSliceWithoutMatchingValues[T any](values []T, shouldBeDeleted func(T) bo
 func GetSliceWithoutZeroValues[T any](values []T) []T {
 	return getSliceWithoutMatchingValues(values, isZero[T])
 }
+
+func GetSliceWithoutDuplicates[T comparable](values []T) []T {
+	valuesAsMap := map[T]bool{}
+	return getSliceWithoutMatchingValues(values, func(value T) bool {
+		if _, keyExists := valuesAsMap[value]; !keyExists {
+			valuesAsMap[value] = true
+			return false
+		}
+		return true
+	})
+}
