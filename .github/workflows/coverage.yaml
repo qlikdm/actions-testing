@@ -1,0 +1,38 @@
+on: pull_request
+
+name: Coverage Reporting
+
+jobs:
+  coverage-reporting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up go 1.18
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
+      - name: Install commands
+        run: |
+          export GOPATH="$HOME/go"
+          PATH="$GOPATH/bin:$PATH"
+          go install github.com/jandelgado/gcov2lcov@latest
+      - name: Checkout the current branch/ref (${{ github.ref_name }})
+        uses: actions/checkout@v3
+        with:
+          repository: qlikdm/actions-testing
+          token: ${{ secrets.MY_TOKEN }}
+          path: current_branch
+      - name: Create coverage report for ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+        run: |
+          cd ${GITHUB_WORKSPACE}/current_branch
+          mkdir coverage
+          go test ./... -coverpkg=./... -coverprofile=coverage/gcov.info
+          gcov2lcov -infile=coverage/gcov.info -outfile=coverage/lcov.info
+      - name: Report code coverage
+        uses: zgosalvez/github-actions-report-lcov@v2
+        with:
+          coverage-files: coverage/lcov.info
+          minimum-coverage: 90
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.MY_TOKEN }}
